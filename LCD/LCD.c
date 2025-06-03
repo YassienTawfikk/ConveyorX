@@ -82,51 +82,71 @@ void LCD_SetCursor(uint8 row, uint8 col){
     }
 }
 
+// static void LCD_Write(uint8 data, uint8 rs)
+// {
+//     // Clear all Data lines of LCD
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_LOW);
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_LOW);
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_LOW);
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_LOW);
+//
+//     // Send Higher Nibble of Data First
+//     if(data & 0x80)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_HIGH);
+//     if(data & 0x40)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_HIGH);
+//     if(data & 0x20)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_HIGH);
+//     if(data & 0x10)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_HIGH);
+//
+//     // Write to LCD RS Pin for Data/Command
+//     if(rs == DATA)
+//     {
+//         Gpio_WritePin(LCD_CONTROL_PORT, LCD_RS_PIN, GPIO_HIGH);
+//     }
+//     else
+//     {
+//         Gpio_WritePin(LCD_CONTROL_PORT, LCD_RS_PIN, GPIO_LOW);
+//     }
+//
+//     LCD_En_Pulse();
+//
+//     // Clear all Data lines of LCD
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_LOW);
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_LOW);
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_LOW);
+//     Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_LOW);
+//
+//     // Send Lower Nibble of Data
+//     if(data & 0x08)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_HIGH);
+//     if(data & 0x04)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_HIGH);
+//     if(data & 0x02)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_HIGH);
+//     if(data & 0x01)
+//         Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_HIGH);
+//
+//     LCD_En_Pulse();
+// }
+
 static void LCD_Write(uint8 data, uint8 rs)
 {
-    // Clear all Data lines of LCD
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_LOW);
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_LOW);
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_LOW);
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_LOW);
+    // Send HIGH NIBBLE
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, (data & 0x10) ? GPIO_HIGH : GPIO_LOW);
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, (data & 0x20) ? GPIO_HIGH : GPIO_LOW);
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, (data & 0x40) ? GPIO_HIGH : GPIO_LOW);
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, (data & 0x80) ? GPIO_HIGH : GPIO_LOW);
 
-    // Send Higher Nibble of Data First
-    if(data & 0x80)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_HIGH);
-    if(data & 0x40)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_HIGH);
-    if(data & 0x20)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_HIGH);
-    if(data & 0x10)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_HIGH);
-
-    // Write to LCD RS Pin for Data/Command
-    if(rs == DATA)
-    {
-        Gpio_WritePin(LCD_CONTROL_PORT, LCD_RS_PIN, GPIO_HIGH);
-    }
-    else
-    {
-        Gpio_WritePin(LCD_CONTROL_PORT, LCD_RS_PIN, GPIO_LOW);
-    }
-
+    Gpio_WritePin(LCD_CONTROL_PORT, LCD_RS_PIN, rs ? GPIO_HIGH : GPIO_LOW);
     LCD_En_Pulse();
 
-    // Clear all Data lines of LCD
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_LOW);
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_LOW);
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_LOW);
-    Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_LOW);
-
-    // Send Lower Nibble of Data
-    if(data & 0x08)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, GPIO_HIGH);
-    if(data & 0x04)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, GPIO_HIGH);
-    if(data & 0x02)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, GPIO_HIGH);
-    if(data & 0x01)
-        Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, GPIO_HIGH);
+    // Send LOW NIBBLE
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D4_PIN, (data & 0x01) ? GPIO_HIGH : GPIO_LOW);
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D5_PIN, (data & 0x02) ? GPIO_HIGH : GPIO_LOW);
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D6_PIN, (data & 0x04) ? GPIO_HIGH : GPIO_LOW);
+    Gpio_WritePin(LCD_DATA_PORT, LCD_D7_PIN, (data & 0x08) ? GPIO_HIGH : GPIO_LOW);
 
     LCD_En_Pulse();
 }
@@ -134,10 +154,10 @@ static void LCD_Write(uint8 data, uint8 rs)
 static void LCD_En_Pulse(void)
 {
     Gpio_WritePin(LCD_CONTROL_PORT, LCD_EN_PIN, GPIO_HIGH);
-    delay_ms(1);
+    delay_us(1);
 
     Gpio_WritePin(LCD_CONTROL_PORT, LCD_EN_PIN, GPIO_LOW);
-    delay_ms(2);
+    delay_us(2);
 }
 
 void LCD_WriteChar(uint8 character)
