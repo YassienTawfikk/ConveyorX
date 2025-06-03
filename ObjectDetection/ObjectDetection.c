@@ -19,7 +19,7 @@ void ObjectDetection_Init(uint8 port, uint8 pin) {
     previousStatus = Gpio_ReadPin(sensorPort, sensorPin);
 }
 
-uint8 ObjectDetection_GetStatus() {
+uint8 ObjectDetection_Update(void) {
     uint8 currentStatus = Gpio_ReadPin(sensorPort, sensorPin);
     if (currentStatus == LOW && previousStatus == HIGH) {
         objectCount++;
@@ -30,6 +30,6 @@ uint8 ObjectDetection_GetStatus() {
     return 0;
 }
 
-uint16_t ObjectDetection_GetObjectCount() {
+uint16_t ObjectDetection_Get_Count(void){
     return objectCount;
 }
