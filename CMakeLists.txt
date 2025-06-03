@@ -26,7 +26,13 @@ add_executable(${EXECUTABLE} ${SOURCE_LIST} ${STARTUP_BASE_DIR}/${SERIES_FOLDER}
         Keypad/Keypad.c
         Keypad/Keypad.h
         EXTI/exti.h
-        EXTI/exti.c)
+        SevenSegment/SevenSegment.h
+        SevenSegment/SevenSegment.c
+        SevenSegment/SevenSegment_Private.h
+        LCD/LCD.h
+        LCD/LCD.c
+        ObjectDetection/ObjectDetection.h
+        ObjectDetection/ObjectDetection.c)
 # Include
 target_include_directories(${EXECUTABLE} PUBLIC ${INCLUDE_LIST})
 # Project symbols
