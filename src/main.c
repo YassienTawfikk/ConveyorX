@@ -45,12 +45,13 @@ int main(void) {
 
 
     while (1) {
-
+        __disable_irq();
         if (Emergency_Flag) {
             LCD_Clear();
             LCD_SetCursor(0, 0);
             LCD_WriteString(" EMERGENCY STOP");
             Emergency_Flag = 0;
         }
+        __enable_irq();
     }
 }
