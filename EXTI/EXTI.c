@@ -1,79 +1,109 @@
+
+#include "stm32f4xx.h"
 #include "EXTI.h"
 #include "Gpio.h"
-#include <string.h>
 
-uint8_t LedFlag = 0;
+static void (*Exti_Callbacks[16])(void) = {0}; // Holds function pointers for EXTI0 - EXTI15
 
-void EXTI_Init(char port, uint8_t pin, char* edge_type) {
-    if (pin > 15) return;
+void Exti_SetCallback(uint8 Line_NO, void (*callback)(void)) {
+  if (Line_NO < 16) {
+    Exti_Callbacks[Line_NO] = callback;
+  }
+}
 
-    uint8_t exti_register = pin / 4;
-    uint8_t bit_position = (pin % 4) * 4;
 
-    uint8_t port_code = 0;
-    if (port == GPIO_A) port_code = 0;
-    else if (port == GPIO_B) port_code = 1;
-    else if (port == GPIO_C) port_code = 2;
-    else if (port == GPIO_D) port_code = 3;
-    else if (port == GPIO_E) port_code = 4;
-    else return;  // Invalid port
+void Exti_Init(uint8 Port_Name, uint8 Line_NO, uint8 Line_status) {
 
-    SYSCFG->EXTICR[exti_register] &= ~(0x0F << bit_position); // clear previous
-    SYSCFG->EXTICR[exti_register] |= (port_code << bit_position); // set new port
+//tell which port and line no we are going to read
+  if (Line_NO >= 0 && Line_NO<= 3) {
+    SYSCFG->EXTICR[0] &= ~(0x0F << ((Line_NO%4) * 4));
+    SYSCFG->EXTICR[0] |= ( Port_Name << ((Line_NO%4) * 4));
+  };
+  if (Line_NO >= 4 && Line_NO<= 7) {
+    SYSCFG->EXTICR[1] &= ~(0x0F << ((Line_NO%4) * 4));
+    SYSCFG->EXTICR[1] |= ( Port_Name << ((Line_NO%4) * 4));
+  };
+  if (Line_NO >= 8 && Line_NO<= 11) {
+    SYSCFG->EXTICR[2] &= ~(0x0F << ((Line_NO%4) * 4));
+    SYSCFG->EXTICR[2] |= ( Port_Name << ((Line_NO%4) * 4));
+  };
+  if (Line_NO >= 12 && Line_NO<= 15) {
+    SYSCFG->EXTICR[3] &= ~(0x0F << ((Line_NO%4) * 4));
+    SYSCFG->EXTICR[3] |= ( Port_Name << ((Line_NO%4) * 4));
+  };
 
-    // Clear previous edge settings
-    EXTI->RTSR &= ~(1 << pin);
-    EXTI->FTSR &= ~(1 << pin);
+  //telling if the line is falling edge or rising edge or both
+  if (Line_status == Falling_edge) {
+    EXTI->FTSR |= (0x1 << (Line_NO));
+  };
+  if (Line_status == Rising_edge) {
+    EXTI->RTSR |= (0x1 << (Line_NO));
+  };
+  if (Line_status == Both_edge) {
+    EXTI->FTSR |= (0x1 << (Line_NO));
+    EXTI->RTSR |= (0x1 << (Line_NO));
+  };
 
-    // Set new edge type
-    if (strcmp(edge_type, RiseLabel) == 0) {
-        EXTI->RTSR |= (1 << pin);
-    } else if (strcmp(edge_type, FallLabel) == 0) {
-        EXTI->FTSR |= (1 << pin);
-    } else if (strcmp(edge_type, BothLabel) == 0) {
-        EXTI->RTSR |= (1 << pin);
-        EXTI->FTSR |= (1 << pin);
+};
+
+void Exti_Enable(uint8 Line_NO) {
+  // enable form the side of EXTI
+  EXTI->IMR |= (0x1 << (Line_NO));
+
+  //enable from the side of NVIC
+  if (Line_NO >= 0 && Line_NO <= 4) {
+    NVIC->NVIC_ISER[0] |= (0x1 << (Line_NO + 6));
+  };
+  if (Line_NO >= 5 && Line_NO <= 9) {
+    NVIC->NVIC_ISER[0] |= (0x1 << 23);
+  };
+  if (Line_NO >= 10 && Line_NO <= 15) {
+    NVIC->NVIC_ISER[1] |= (0x1 << 8);
+  };
+};
+
+void Exti_Disable(uint8 Line_NO) {
+  // enable form the side of EXTI
+  EXTI->IMR &= ~(0x1 << (Line_NO));
+
+  //enable from the side of the NVIC
+  if (Line_NO >= 0 && Line_NO <= 4) {
+    NVIC->NVIC_ICER[0] |= (0x1 << (Line_NO + 6));
+  };
+  if (Line_NO >= 5 && Line_NO <= 9) {
+    NVIC->NVIC_ICER[0] |= (0x1 << 23);
+  };
+  if (Line_NO >= 10 && Line_NO <= 15) {
+    NVIC->NVIC_ICER[1] |= (0x1 << 8);
+  };
+};
+
+
+// Helper for shared IRQs
+static void EXTI_GenericHandler(uint8 line_no) {
+  if (EXTI->PR & (1 << line_no)) {
+    EXTI->PR |= (1 << line_no); // Clear pending
+    if (Exti_Callbacks[line_no]) {
+      Exti_Callbacks[line_no](); // Call user function
     }
-}
+  }
+};
 
-uint8_t EXTI_GetIRQ(uint8_t pin) {
-    if (pin <= 4){
-        return 6 + pin;    // EXTI0–EXTI4 → IRQ6–10
-        }
-    else if (pin <= 9){
-        return 23;         // EXTI5–9     → IRQ23
-        }
-    else if (pin <= 15){
-      return 40;         // EXTI10–15   → IRQ40
-      }
-    else{
-        return 255;        // Invalid EXTI pin
-        }
-}
+// Individual ISRs
+void EXTI0_IRQHandler(void)  { EXTI_GenericHandler(0); }
+void EXTI1_IRQHandler(void)  { EXTI_GenericHandler(1); }
+void EXTI2_IRQHandler(void)  { EXTI_GenericHandler(2); }
+void EXTI3_IRQHandler(void)  { EXTI_GenericHandler(3); }
+void EXTI4_IRQHandler(void)  { EXTI_GenericHandler(4); }
 
-void EXTI_enable(uint8_t pin) {
-    if (pin > 15) return;
+void EXTI9_5_IRQHandler(void) {
+  for (uint8 i = 5; i <= 9; i++) {
+    EXTI_GenericHandler(i);
+  }
+};
 
-    EXTI->IMR |= (1 << pin);
-
-    uint8_t irq = EXTI_GetIRQ(pin);
-    NVIC->NVIC_ISER[irq / 32] |= (1 << (irq % 32));
-}
-
-void EXTI_disable(uint8_t pin) {
-    if (pin > 15) return;
-
-    EXTI->IMR &= ~(1 << pin);                            // Mask EXTI line
-
-    uint8_t irq = EXTI_GetIRQ(pin);                    // Get IRQ number
-    NVIC->NVIC_ICER[irq / 32] |= (1 << (irq % 32));      // Disable IRQ in NVIC
-}
-
-uint8_t EXTI_GetPending(uint8_t pin) {
-    return (EXTI->PR & (1 << pin))? 1 : 0;
-}
-
-void EXTI_ClearPending(uint8_t pin) {
-    EXTI->PR |= (1 << pin);
-}
-
+void EXTI15_10_IRQHandler(void) {
+  for (uint8 i = 10; i <= 15; i++) {
+    EXTI_GenericHandler(i);
+  }
+};

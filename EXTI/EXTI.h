@@ -1,11 +1,20 @@
+
+
 #ifndef EXTI_H
 #define EXTI_H
 
-#include <stdint.h>
+#endif //EXTI_H
 
 #include "Std_Types.h"
+#include "stm32f4xx.h"
+#include "Gpio.h"
 
-/* ============ EXTI REGISTERS STRUCTURE ============ */
+#define PortA 0x0
+#define PortB 0x1
+#define PortC 0x2
+#define PortD 0x3
+#define PortE 0x4
+#define PortH 0x7
 
 typedef struct {
     uint32 IMR;
@@ -14,54 +23,25 @@ typedef struct {
     uint32 FTSR;
     uint32 SWIER;
     uint32 PR;
-}EXTI_Type;
+} ExtiType;
 
-#define EXTI        ((EXTI_Type*)0x40013C00)
-
-/* ============ NVIC REGISTERS STRUCTURE ============ */
+#define EXTI ((ExtiType*)0x40013C00)
 
 typedef struct {
     uint32 NVIC_ISER[8];
     uint32 NVIC_ICER[8];
-}NVIC_Type;
+}NVICType;
+#define NVIC ((NVICType*)0xE000E100)
 
 
-#define NVIC        ((NVIC_Type*)0xE000E100)
+#define Falling_edge 0
+#define Rising_edge 1
+#define Both_edge 2
 
+// Callback registration
+void Exti_SetCallback(uint8 Line_NO, void (*callback)(void));
 
-/* ============ SYSCFG REGISTERS STRUCTURE ============ */
-typedef struct {
-    uint32 MEMRMP;
-    uint32 PMC;
-    uint32 EXTICR[4];
-}SYSCFG_Type;
+void Exti_Init(uint8 Port_Name, uint8 Line_NO, uint8 Line_status);
+void Exti_Enable(uint8 Line_NO);
+void Exti_Disable(uint8 Line_NO);
 
-#define SYSCFG      ((SYSCFG_Type*)0x40013800)
-
-
-/* ============ EDGE TRIGGER TYPES ============ */
-#define RisingEdge  0
-#define FallingEdge 1
-#define BothEdge    2
-
-#define RiseLabel "Rise"
-#define FallLabel "Fall"
-#define BothLabel "Both"
-
-#define True       1
-#define False      0
-
-#define __disable_irq()  __asm volatile ("cpsid i")
-#define __enable_irq()   __asm volatile ("cpsie i")
-
-
-extern uint8_t LedFlag;
-
-void EXTI_Init(char port, uint8_t pin, char* edge_type);
-void EXTI_enable(uint8_t pin);
-void EXTI_disable(uint8_t pin);
-uint8_t EXTI_GetIRQ(uint8_t pin);
-uint8_t EXTI_GetPending(uint8_t pin);
-void EXTI_ClearPending(uint8_t pin);
-
-#endif
