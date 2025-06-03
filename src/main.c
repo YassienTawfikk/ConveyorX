@@ -29,7 +29,7 @@ void Emergency_Stop_Handler(void) {
 }
 
 void Reset_Button_Handler(void) {
-    NVIC_SystemReset();  // Software reset
+    NVIC_SystemReset();
 }
 
 
