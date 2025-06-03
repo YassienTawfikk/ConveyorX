@@ -100,8 +100,10 @@ int main(void) {
                 lastObjectCount = currentCount;
                 LCD_SetCursor(1, 0);
                 LCD_WriteString("Count: ");
-                LCD_PrintNumber(currentCount);
+                LCD_WriteInteger(currentCount);
             }
         }
     }
+
+    return 0;
 }
