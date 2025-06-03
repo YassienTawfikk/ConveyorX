@@ -9,6 +9,7 @@ set(INCLUDE_LIST ${INCLUDE_LIST}
         ${PROJECT_PATH}/Keypad
         ${PROJECT_PATH}/SevenSegment
         ${PROJECT_PATH}/EXTI
+        ${PROJECT_PATH}/TIM2
 
 
 )
