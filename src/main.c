@@ -1,12 +1,13 @@
-
 #include "Gpio.h"
 #include "Rcc.h"
 #include "sevenSegment.h"
 #include "Std_Types.h"
-#include "keypad.h"
 #include "stm32f4xx.h"
 #include "EXTI.h"
 #include "LCD.h"
+#include "ObjectDetection.h"
+
+#define IR_PIN 2
 
 volatile uint8 Emergency_Flag = 0;
 
@@ -26,6 +27,8 @@ int main(void) {
     Rcc_Enable(RCC_GPIOB);
     Rcc_Enable(RCC_GPIOC);
     Rcc_Enable(RCC_SYSCFG);
+
+    ObjectDetection_Init(GPIO_A, IR_PIN);
 
     LCD_Init();                  // Initialize LCD
     LCD_Clear();
