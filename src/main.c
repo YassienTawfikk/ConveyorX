@@ -104,19 +104,16 @@ int main(void) {
         }
         __enable_irq();
 
-        // Existing Object Detection logic
-        if (ObjectDetection_Update()) {
-            uint16_t currentCount = ObjectDetection_Get_Count();
-
-            if (currentCount != lastObjectCount) {
-                lastObjectCount = currentCount;
-                if (!Emergency_Flag) { // Only update if not in emergency mode
-                    LCD_SetCursor(1, 0); // Row 1 for object count
-                    LCD_WriteString("Count: ");
-                    LCD_WriteInteger(currentCount);
-                    LCD_WriteString("   "); // Clear trailing digits if new count is shorter
-                }
-            }
+        // … inside the main loop …
+        
+        if (ObjectDetection_Task())           // ← now using the new API
+        {
+            uint16_t cnt = ObjectDetection_GetCount();
+        
+            LCD_SetCursor(1, 0);
+            LCD_WriteString("Count: ");
+            LCD_WriteInteger(cnt);
+            LCD_WriteString("   ");            // clear leftovers
         }
 
         // Speed Measurement Logic
