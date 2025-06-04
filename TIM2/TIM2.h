@@ -4,14 +4,13 @@
 #ifndef TIM2_H
 #define TIM2_H
 
-
-#include "Std_Types.h"
-
+#include "stm32f401xe.h"
+#include "Std_Types.h" // Ensure this includes uint32_t
 
 #define TIM2_CLOCK_FREQ_HZ 84000000UL // 84 MHz
 
 void TIM2_Capture_Init(void);
-uint32 TIM2_GetCaptureValue(void);
+uint32_t TIM2_GetCaptureValue(void); // Changed to uint32_t
 void TIM2_ClearCaptureFlag(void);
 
 
