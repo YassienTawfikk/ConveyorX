@@ -23,7 +23,7 @@ uint8 ObjectDetection_Update(void) {
     uint8 currentStatus = Gpio_ReadPin(sensorPort, sensorPin);
 
     if (previousStatus == HIGH && currentStatus == LOW) {
-        delay_ms(20); // debounce to avoid multiple counts from bouncing
+        delay_milli_second(20); // debounce to avoid multiple counts from bouncing
         if (Gpio_ReadPin(sensorPort, sensorPin) == LOW) { // confirm still LOW
             objectCount++;
             previousStatus = LOW;
@@ -37,4 +37,10 @@ uint8 ObjectDetection_Update(void) {
 
 uint16_t ObjectDetection_Get_Count(void){
     return objectCount;
+}
+
+void delay_milli_second(uint32 ms) {
+    uint32 delay = ms * 1000;
+    for (; delay > 0; delay--)
+        __asm("nop");
 }

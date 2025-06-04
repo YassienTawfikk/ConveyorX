@@ -13,6 +13,6 @@
 void ObjectDetection_Init(uint8 port, uint8 pin);
 uint8 ObjectDetection_Update(void); // Return 1 at detected falling edge
 uint16_t ObjectDetection_Get_Count(void);
-
+void delay_milli_second(uint32 ms);
 
 #endif //OBJECTDETECTION_H
