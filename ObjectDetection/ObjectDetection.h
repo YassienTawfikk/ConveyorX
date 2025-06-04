@@ -1,18 +1,26 @@
-//
-// Created by Yassien on 6/3/2025.
-//
+/*
+ * ObjectDetection.h
+ * Simple falling-edge object counter (active-LOW sensor)
+ * Works with push-button or IR module that pulls the line LOW when triggered.
+ */
 
 #ifndef OBJECTDETECTION_H
 #define OBJECTDETECTION_H
 
-#include <stdint.h>
-
 #include "Std_Types.h"
-#include "Gpio.h"
 
-void ObjectDetection_Init(uint8 port, uint8 pin);
-uint8 ObjectDetection_Update(void); // Return 1 at detected falling edge
-uint16_t ObjectDetection_Get_Count(void);
-void delay_milli_second(uint32 ms);
+/* Initialise the sensor pin.
+ *  - port : GPIO_A / GPIO_B / …  (as defined in your Gpio driver)
+ *  - pin  : pin number (0-15)
+ */
+void     ObjectDetection_Init(uint8 port, uint8 pin);
 
-#endif //OBJECTDETECTION_H
+/* Call once every main-loop iteration.
+ * Returns 1 exactly once per detected object, otherwise 0.
+ */
+uint8    ObjectDetection_Task(void);
+
+/* Read total number of detected objects. */
+uint16_t ObjectDetection_GetCount(void);
+
+#endif /* OBJECTDETECTION_H */
