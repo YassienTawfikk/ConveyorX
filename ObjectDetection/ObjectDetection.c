@@ -21,11 +21,16 @@ void ObjectDetection_Init(uint8 port, uint8 pin) {
 
 uint8 ObjectDetection_Update(void) {
     uint8 currentStatus = Gpio_ReadPin(sensorPort, sensorPin);
-    if (currentStatus == LOW && previousStatus == HIGH) {
-        objectCount++;
-        previousStatus = currentStatus;
-        return 1;
+
+    if (previousStatus == HIGH && currentStatus == LOW) {
+        delay_ms(20); // debounce to avoid multiple counts from bouncing
+        if (Gpio_ReadPin(sensorPort, sensorPin) == LOW) { // confirm still LOW
+            objectCount++;
+            previousStatus = LOW;
+            return 1;
+        }
     }
+
     previousStatus = currentStatus;
     return 0;
 }
