@@ -4,16 +4,12 @@ set(INCLUDE_LIST ${INCLUDE_LIST}
         ${PROJECT_PATH}/STM32-base-STM32Cube/CMSIS/${SERIES_FOLDER}/inc
         ${PROJECT_PATH}/include
         ${PROJECT_PATH}/Lib
+        ${PROJECT_PATH}/GPIO
         ${PROJECT_PATH}/Rcc
-        ${PROJECT_PATH}/Gpio
-        ${PROJECT_PATH}/Keypad
-        ${PROJECT_PATH}/SevenSegment
         ${PROJECT_PATH}/EXTI
-        ${PROJECT_PATH}/TIM2
         ${PROJECT_PATH}/LCD
         ${PROJECT_PATH}/ObjectDetection
-
-
+        ${PROJECT_PATH}/TIM2
 )
 
 if (USE_HAL)

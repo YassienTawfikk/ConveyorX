@@ -19,20 +19,7 @@ set(STARTUP_BASE_DIR                     ${PROJECT_PATH}/STM32-base/startup/)
 set(EXECUTABLE                           ${CMAKE_PROJECT_NAME})
 
 # Executable files
-add_executable(${EXECUTABLE} ${SOURCE_LIST} ${STARTUP_BASE_DIR}/${SERIES_FOLDER}/${MAPPED_DEVICE}.s
-        Gpio/Gpio.h
-        Gpio/Gpio.c
-        Gpio/Gpio_Private.h
-        Keypad/Keypad.c
-        Keypad/Keypad.h
-        EXTI/exti.h
-        SevenSegment/SevenSegment.h
-        SevenSegment/SevenSegment.c
-        SevenSegment/SevenSegment_Private.h
-        LCD/LCD.h
-        LCD/LCD.c
-        ObjectDetection/ObjectDetection.h
-        ObjectDetection/ObjectDetection.c)
+add_executable(${EXECUTABLE} ${SOURCE_LIST} ${STARTUP_BASE_DIR}/${SERIES_FOLDER}/${MAPPED_DEVICE}.s)
 # Include
 target_include_directories(${EXECUTABLE} PUBLIC ${INCLUDE_LIST})
 # Project symbols
@@ -50,11 +37,9 @@ target_link_options(${EXECUTABLE} PRIVATE
         ${CPU_PARAMETERS}
         -L${LINKER_SCRIPTS_BASE_DIR}
         -T${LINKER_SCRIPTS_BASE_DIR}/${SERIES_FOLDER}/${DEVICE}.ld
-#        -nostartfiles
         -Xlinker --gc-sections
         -Wl,-Map=${CMAKE_PROJECT_NAME}.map
         --specs=nano.specs
-        #-u _printf_float                # STDIO float formatting support
 )
 
 # Execute post-build to print size

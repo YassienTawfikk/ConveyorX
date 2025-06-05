@@ -2,7 +2,7 @@
 #define LCD_H
 
 #include "Std_Types.h"
-#include "Gpio.h"
+#include "GPIO.h"
 
 #define LCD_ROWS          2
 #define LCD_COLS          16

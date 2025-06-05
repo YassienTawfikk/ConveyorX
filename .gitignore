@@ -1,9 +1,5 @@
 .idea/
-
-__pycache__/
-
-.DS_Store/
-
-cmake-build-debug/
-
-cmake/ArmToolchain.cmake
+.vscode/
+cmake-build-*/
+build*/
+*.zip
