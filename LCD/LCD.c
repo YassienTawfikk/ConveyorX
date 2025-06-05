@@ -1,6 +1,7 @@
 #include "Gpio.h"
 #include "Std_Types.h"
 #include "LCD.h"
+#include "TIM_Delay.h"
 
 static void LCD_Write(uint8 data, uint8 rs);
 

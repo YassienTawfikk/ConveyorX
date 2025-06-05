@@ -10,6 +10,7 @@
 #include "LCD.h"
 #include "ObjectDetection.h"
 #include "TIM2.h"
+#include "TIM_Delay.h"
 
 // ───── Pin Definitions ──────────────────────────────────
 #define IR_PIN             2   // GPIO_A
