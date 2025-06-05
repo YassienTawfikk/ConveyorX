@@ -71,14 +71,18 @@
 
 // Function declarations
 void LCD_Init(void);
+
 void LCD_Clear(void);
+
 void LCD_SetCursor(uint8 row, uint8 col);
+
 void LCD_Display_Scroll(uint8 direction);
-void LCD_Cursor_Shift(uint8 direction);  // Fixed function name (removed extra underscore)
+
+void LCD_Cursor_Shift(uint8 direction); // Fixed function name (removed extra underscore)
 void LCD_WriteChar(uint8 character);
-void LCD_WriteString(const char* string);
+
+void LCD_WriteString(const char *string);
+
 void LCD_WriteInteger(uint16 intvalue);
-void delay_ms(uint32 ms);
-void delay_us(uint32 us);
 
 #endif //LCD_H
