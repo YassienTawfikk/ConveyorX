@@ -25,6 +25,8 @@ uint16_t lastObjectCount = 0;
 volatile uint32_t capture1 = 0;
 volatile uint32_t capture2 = 0;
 volatile uint8_t capture_sequence = 0; // 0: waiting for first capture, 1: waiting for second
+#define DISTANCE_MM 50.0f  // Distance moved per rising edge
+int lcd_cleared = 0;
 
 
 //                          INTERRUPT CALLBACKS                              //
@@ -34,7 +36,15 @@ void Emergency_Stop_Handler(void) {
 }
 
 void Reset_Button_Handler(void) {
-    NVIC_SystemReset();
+   // NVIC_SystemReset();
+    Emergency_Flag = 0;
+    lcd_cleared = 0;         // Allow the LCD to update again
+    LCD_Clear();
+    LCD_SetCursor(0, 0);
+    LCD_WriteString(" Speed: ");
+    // LCD_SetCursor(1, 0);
+    // LCD_WriteString("TMR: ");
+
 }
 
 
@@ -55,6 +65,8 @@ void Init_LCD(void) {
     LCD_SetCursor(0, 0);
     LCD_WriteString("Speed: "); // Label for speed on LCD line 0
     // Object count will be displayed on line 1, so no initial label needed here.
+    // LCD_SetCursor(1, 0);
+    // LCD_WriteString("TMR: ");
 }
 
 void Init_ObjectDetection(void) {
@@ -95,14 +107,21 @@ int main(void) {
 
     while (1) {
         __disable_irq();
-        // Existing Emergency Stop logic
+        // Emergency Stop
         if (Emergency_Flag) {
-            LCD_Clear();
-            LCD_SetCursor(0, 0);
-            LCD_WriteString(" EMERGENCY STOP");
-            Emergency_Flag = 0; // Clear the flag after displaying the message
+            if (!lcd_cleared) {
+                LCD_Clear();
+                LCD_SetCursor(0, 0);
+                LCD_WriteString(" EMERGENCY STOP");
+                lcd_cleared = 1;
+                // Emergency_Flag = 0; // Clear the flag after displaying the message
+            }
+            __enable_irq();
+            continue;
         }
+
         __enable_irq();
+        lcd_cleared = 0;
 
         // … inside the main loop …
         
@@ -116,51 +135,45 @@ int main(void) {
             LCD_WriteString("   ");            // clear leftovers
         }
 
-        // Speed Measurement Logic
-        if ((TIM2->SR & TIM_SR_CC1IF) != 0) { // Check Channel 1 flag
-            uint32_t current_capture_value = TIM2_GetCaptureValue(); // Reads CCR1 (clears CC1IF)
+
+
+        // // timer counter
+        // LCD_SetCursor(1, 4);
+        // LCD_WriteInteger((uint16_t)(TIM2->CNT % 10000));
+        // delay_ms(100);
+
+        // rising-edge capture
+        if ((TIM2->SR & TIM_SR_CC1IF) != 0) {
+            uint32_t current_capture_value = TIM2_GetCaptureValue();
 
             if (capture_sequence == 0) {
                 capture1 = current_capture_value;
                 capture_sequence = 1;
-
-                // --- DIAGNOSTIC: Display the raw first capture value ---
-                if (!Emergency_Flag) {
-                    LCD_SetCursor(0, 7); // Position after "Speed: " on line 0
-                    LCD_WriteInteger((uint16_t)capture1); // Cast to uint16_t for LCD
-                    LCD_WriteString("      "); // Clear remaining characters
-                }
-                // ----------------------------------------------------
             } else {
                 capture2 = current_capture_value;
                 capture_sequence = 0;
 
                 uint32_t period_us;
-                if (capture2 >= capture1) {
+                if (capture2 >= capture1)
                     period_us = capture2 - capture1;
-                } else {
-                    // Handle timer overflow (for a 32-bit TIM2 counter)
+                else
                     period_us = (0xFFFFFFFFUL - capture1) + capture2 + 1;
-                }
 
-                float frequency_Hz = 0.0f;
-                if (period_us > 0) {
-                    frequency_Hz = (float)1000000.0f / period_us; // Frequency in Hz (since period is in us)
-                }
-
-                // Speed Measurement Logic (Diagnostic: Display raw TIM2 counter)
-                if (!Emergency_Flag) { // Only update if not in emergency mode
-                    uint32_t current_timer_count = TIM2->CNT; // Read the current counter value
-
-                    LCD_SetCursor(0, 7); // Position after "Speed: " on line 0
-                    LCD_WriteInteger((uint16_t)(current_timer_count % 10000)); // Display last 4 digits for readability
-                    LCD_WriteString("      "); // Clear remaining characters
+                // Filter out bad/zero readings
+                if (period_us > 0 && period_us < 1000000) {
+                    float speed_mm_per_s = DISTANCE_MM * (1000000.0f / period_us);
+                    LCD_SetCursor(0, 7);
+                    LCD_WriteString("     ");  // Clear old
+                    LCD_SetCursor(0, 7);
+                    LCD_WriteInteger((uint16_t)speed_mm_per_s);
+                    LCD_WriteString(" mm/s");
                 }
             }
 
-            // Explicitly clear the flag (redundant if GetCaptureValue reads CCR1, but safe)
             TIM2_ClearCaptureFlag();
         }
+
+        delay_ms(100);
     }
 
     return 0;
