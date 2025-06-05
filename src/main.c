@@ -37,7 +37,7 @@ void LCD_DisplaySpeed(uint16_t speed_mm_s) {
 
 void LCD_DisplayCount(uint32_t count) {
     LCD_SetCursor(1, 0);
-    LCD_WriteString("Count:      ");
+    LCD_WriteString("Count: ");
     LCD_SetCursor(1, 7);
     LCD_WriteInteger(count);
 }
@@ -151,7 +151,7 @@ int main(void) {
         lcd_emergency_displayed = 0;
 
         // ─── Object Detection ──────────────────────
-        poll_for_object(&objectCount);
+        check_objects_count(&objectCount);
         LCD_DisplayCount(objectCount);
 
         // ─── Speed Measurement ─────────────────────

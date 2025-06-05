@@ -5,6 +5,6 @@
 
 void ObjectDetection_Init(uint8 port, uint8 pin);  // Needed to set pin
 
-void poll_for_object(uint32 *counter);  // Detects falling edge and increments *counter
+void check_objects_count(uint32 *counter);  // Detects falling edge and increments *counter
 
 #endif

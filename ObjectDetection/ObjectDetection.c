@@ -14,7 +14,7 @@ void ObjectDetection_Init(uint8 port, uint8 pin)
     GPIO_Init(od_port, od_pin, GPIO_INPUT, GPIO_PULL_UP);
 }
 
-void poll_for_object(uint32 *counter) {
+void check_objects_count(uint32 *counter) {
     static uint8 last_pin_state = HIGH;
     uint8 current_pin_state = GPIO_ReadPin(od_port, od_pin);
 
