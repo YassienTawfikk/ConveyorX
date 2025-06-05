@@ -61,9 +61,10 @@ void LCD_Cursor_Shift(uint8 direction){
     }
 }
 
-void LCD_Clear(void){
+void LCD_Clear(void) {
     LCD_Write(LCD_CLEAR_DISPLAY, CMD);
     delay_ms(2);
+    LCD_Write(LCD_ROW0COL0_ADDR, CMD);  // Reset cursor to (0,0)
 }
 
 void LCD_SetCursor(uint8 row, uint8 col){
@@ -131,26 +132,24 @@ void LCD_SetCursor(uint8 row, uint8 col){
 //     LCD_En_Pulse();
 // }
 
-static void LCD_Write(uint8 data, uint8 rs)
-{
-    // Send HIGH NIBBLE
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D4_PIN, (data & 0x10) ? GPIO_HIGH : GPIO_LOW);
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D5_PIN, (data & 0x20) ? GPIO_HIGH : GPIO_LOW);
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D6_PIN, (data & 0x40) ? GPIO_HIGH : GPIO_LOW);
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D7_PIN, (data & 0x80) ? GPIO_HIGH : GPIO_LOW);
+static void LCD_Write(uint8 data, uint8 rs){
+    // --- Send HIGH nibble ---
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D4_PIN, (data >> 4) & 0x01);
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D5_PIN, (data >> 5) & 0x01);
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D6_PIN, (data >> 6) & 0x01);
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D7_PIN, (data >> 7) & 0x01);
 
     GPIO_WritePin(LCD_CONTROL_PORT, LCD_RS_PIN, rs ? GPIO_HIGH : GPIO_LOW);
     LCD_En_Pulse();
 
-    // Send LOW NIBBLE
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D4_PIN, (data & 0x01) ? GPIO_HIGH : GPIO_LOW);
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D5_PIN, (data & 0x02) ? GPIO_HIGH : GPIO_LOW);
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D6_PIN, (data & 0x04) ? GPIO_HIGH : GPIO_LOW);
-    GPIO_WritePin(LCD_DATA_PORT, LCD_D7_PIN, (data & 0x08) ? GPIO_HIGH : GPIO_LOW);
+    // --- Send LOW nibble ---
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D4_PIN, data & 0x01);
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D5_PIN, (data >> 1) & 0x01);
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D6_PIN, (data >> 2) & 0x01);
+    GPIO_WritePin(LCD_DATA_PORT, LCD_D7_PIN, (data >> 3) & 0x01);
 
     LCD_En_Pulse();
 }
-
 static void LCD_En_Pulse(void)
 {
     GPIO_WritePin(LCD_CONTROL_PORT, LCD_EN_PIN, GPIO_HIGH);
