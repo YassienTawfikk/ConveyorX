@@ -45,9 +45,9 @@ void LCD_DisplayCount(uint32_t count) {
 void LCD_DisplayEmergency(void) {
     LCD_Clear();
     LCD_SetCursor(0, 0);
-    LCD_WriteString("!! EMERGENCY !!");
+    LCD_WriteString("   EMERGENCY ");
     LCD_SetCursor(1, 0);
-    LCD_WriteString("   STOPPED   ");
+    LCD_WriteString("     STOP   ");
 }
 
 // ───── Interrupt Handlers ───────────────────────────────
