@@ -19,7 +19,7 @@
 
 // Global variables
 volatile uint8 Emergency_Flag = 0;
-uint16_t lastObjectCount = 0;
+uint32_t objectCount = 0;
 
 // Global variables for speed measurement
 volatile uint32_t capture1 = 0;
@@ -124,16 +124,13 @@ int main(void) {
         lcd_cleared = 0;
 
         // … inside the main loop …
-        
-        if (ObjectDetection_Task())           // ← now using the new API
-        {
-            uint16_t cnt = ObjectDetection_GetCount();
-        
-            LCD_SetCursor(1, 0);
-            LCD_WriteString("Count: ");
-            LCD_WriteInteger(cnt);
-            LCD_WriteString("   ");            // clear leftovers
-        }
+
+        poll_for_object(&objectCount);  // Call this every loop
+
+        LCD_SetCursor(1, 0);
+        LCD_WriteString("Count: ");
+        LCD_WriteInteger(objectCount);
+        LCD_WriteString("   ");
 
 
 
