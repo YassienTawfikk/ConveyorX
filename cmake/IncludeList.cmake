@@ -10,6 +10,7 @@ set(INCLUDE_LIST ${INCLUDE_LIST}
         ${PROJECT_PATH}/LCD
         ${PROJECT_PATH}/ObjectDetection
         ${PROJECT_PATH}/TIM2
+        ${PROJECT_PATH}/TimerDelay
 )
 
 if (USE_HAL)
