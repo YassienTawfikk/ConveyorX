@@ -5,8 +5,6 @@
 static uint8 ir_port;
 static uint8 ir_pin;
 
-#define OBJ_PIN od_pin  // for identical naming as your example
-
 void ObjectDetection_Init(uint8 port, uint8 pin) {
     ir_port = port;
     ir_pin = pin;
