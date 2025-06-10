@@ -42,4 +42,6 @@ uint8 GPIO_WritePin(uint8 PortName, uint8 PinNumber, uint8 Data);
 
 uint8 GPIO_ReadPin(uint8 PortName, uint8 PinNumber);
 
+void GPIO_SetAlternateFunction(uint8 port, uint8 pin, uint8 af_value);
+
 #endif //GPIO_H
