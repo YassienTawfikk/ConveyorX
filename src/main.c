@@ -78,6 +78,10 @@ void Reset_Button_Handler(void) {
     LCD_DisplaySpeed(0);
     LCD_DisplayCount(objectCount);
     LCD_DisplayMotorSpeed(adc_value);
+    adc_value = ADC_Read(1);
+    PWM_SetDutyCycle(adc_value);
+    LCD_DisplayMotorSpeed(adc_value);
+
 }
 
 // ───── Initialization Functions ─────────────────────────
@@ -177,6 +181,7 @@ int main(void) {
             if (!lcd_emergency_displayed) {
                 LCD_DisplayEmergency();
                 lcd_emergency_displayed = 1;
+                PWM_Stop();
             }
             __enable_irq();
             continue;
