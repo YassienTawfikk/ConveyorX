@@ -11,6 +11,8 @@ set(INCLUDE_LIST ${INCLUDE_LIST}
         ${PROJECT_PATH}/ObjectDetection
         ${PROJECT_PATH}/TIM2
         ${PROJECT_PATH}/TimerDelay
+        ${PROJECT_PATH}/ADC
+        ${PROJECT_PATH}/PWM
 )
 
 if (USE_HAL)

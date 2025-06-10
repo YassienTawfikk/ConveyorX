@@ -18,7 +18,6 @@ void check_objects_count(uint32 *counter) {
 
     if (last_pin_state == HIGH && current_pin_state == LOW) {
         (*counter)++;
-        delay_ms(100);
     }
     last_pin_state = current_pin_state;
 }

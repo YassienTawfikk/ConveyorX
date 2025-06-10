@@ -1,5 +1,3 @@
-
-
 #ifndef EXTI_H
 #define EXTI_H
 
@@ -30,7 +28,8 @@ typedef struct {
 typedef struct {
     uint32 NVIC_ISER[8];
     uint32 NVIC_ICER[8];
-}NVICType;
+} NVICType;
+
 #define NVIC ((NVICType*)0xE000E100)
 
 
@@ -42,6 +41,7 @@ typedef struct {
 void Exti_SetCallback(uint8 Line_NO, void (*callback)(void));
 
 void Exti_Init(uint8 Port_Name, uint8 Line_NO, uint8 Line_status);
-void Exti_Enable(uint8 Line_NO);
-void Exti_Disable(uint8 Line_NO);
 
+void Exti_Enable(uint8 Line_NO);
+
+void Exti_Disable(uint8 Line_NO);
