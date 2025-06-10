@@ -48,9 +48,9 @@ void LCD_DisplayMotorSpeed(uint16 value) {
 
     LCD_SetCursor(1, 12);
     LCD_WriteString("    ");  // clear previous % digits
-    LCD_SetCursor(1, 10);
+    LCD_SetCursor(1, 9);
     LCD_WriteString("PWM:");
-    LCD_SetCursor(1, 14);
+    LCD_SetCursor(1, 13);
     LCD_WriteInteger(duty);
     LCD_WriteString("%");
 }
