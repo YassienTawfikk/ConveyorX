@@ -1,5 +1,3 @@
-// #include "stm32f4xx.h"
-
 // ───── Core Drivers ─────────────────────────────────────
 #include "Std_Types.h"
 #include "GPIO.h"
@@ -32,7 +30,7 @@ uint16 adc_value                  = 0;
 // ───── LCD Display Helpers ──────────────────────────────
 void LCD_DisplaySpeed(uint16_t speed_mm_s) {
     LCD_SetCursor(0, 0);
-    LCD_WriteString("Speed:      ");
+    LCD_WriteString("Speed:     ");  // clear area
     LCD_SetCursor(0, 7);
     LCD_WriteInteger(speed_mm_s);
     LCD_WriteString(" mm/s");
@@ -40,25 +38,30 @@ void LCD_DisplaySpeed(uint16_t speed_mm_s) {
 
 void LCD_DisplayCount(uint32_t count) {
     LCD_SetCursor(1, 0);
-    LCD_WriteString("Count: ");
-    LCD_SetCursor(1, 6);
+    LCD_WriteString("Cnt:      ");  // pad for overwrite
+    LCD_SetCursor(1, 5);
     LCD_WriteInteger(count);
+}
+
+void LCD_DisplayMotorSpeed(uint16 value) {
+    uint16 duty = (uint16)(((double)value / 1023) * 100);
+
+    LCD_SetCursor(1, 12);
+    LCD_WriteString("    ");  // clear previous % digits
+    LCD_SetCursor(1, 10);
+    LCD_WriteString("PWM:");
+    LCD_SetCursor(1, 14);
+    LCD_WriteInteger(duty);
+    LCD_WriteString("%");
 }
 
 void LCD_DisplayEmergency(void) {
     LCD_Clear();
+    delay_ms(5);  // wait for LCD controller
     LCD_SetCursor(0, 0);
     LCD_WriteString("   EMERGENCY ");
     LCD_SetCursor(1, 0);
-    LCD_WriteString("     STOP   ");
-}
-
-void LCD_DisplayMotorSpeed(uint16 value) {
-    LCD_SetCursor(1, 8);
-    LCD_WriteString("PWM: ");
-    LCD_SetCursor(1, 12);
-    LCD_WriteInteger((uint16)(((double)value/1023) * 100 ));
-    LCD_WriteString("%");
+    LCD_WriteString("     STOP    ");
 }
 
 // ───── Interrupt Handlers ───────────────────────────────
@@ -73,6 +76,7 @@ void Reset_Button_Handler(void) {
     delay_ms(5);
     LCD_DisplaySpeed(0);
     LCD_DisplayCount(objectCount);
+    LCD_DisplayMotorSpeed(adc_value);
 }
 
 // ───── Initialization Functions ─────────────────────────
@@ -88,8 +92,10 @@ void Init_Clocks(void) {
 void Init_LCD(void) {
     LCD_Init();
     LCD_Clear();
+    delay_ms(5);
     LCD_DisplaySpeed(0);
     LCD_DisplayCount(0);
+    LCD_DisplayMotorSpeed(0);
 }
 
 void Init_ObjectDetection(void) {
@@ -181,12 +187,12 @@ int main(void) {
         // ─── Speed Measurement ─────────────────────
         Process_SpeedMeasurement();
 
-        // ─── Motor Measurement ─────────────────────
+        // ─── ADC + PWM Update ──────────────────────
         adc_value = ADC_Read(1);
         PWM_SetDutyCycle(adc_value);
         LCD_DisplayMotorSpeed(adc_value);
 
-        delay_ms(100);
+        delay_ms(100);  // UI update rate
     }
 
     return 0;

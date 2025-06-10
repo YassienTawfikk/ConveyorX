@@ -110,3 +110,55 @@ uint8 GPIO_ReadPin(uint8 PortName, uint8 PinNumber){
   }
   return pin_value;
 }
+
+
+void GPIO_SetAlternateFunction(uint8 PortName, uint8 PinNumber, uint8 AF_Number) {
+    switch (PortName) {
+        case GPIO_A:
+            if (PinNumber <= 7) {
+                GPIOA_AFRL &= ~(0xF << (PinNumber * 4));
+                GPIOA_AFRL |=  (AF_Number << (PinNumber * 4));
+            } else {
+                uint8 localPin = PinNumber - 8;
+                GPIOA_AFRH &= ~(0xF << (localPin * 4));
+                GPIOA_AFRH |=  (AF_Number << (localPin * 4));
+            }
+            break;
+
+        case GPIO_B:
+            if (PinNumber <= 7) {
+                GPIOB_AFRL &= ~(0xF << (PinNumber * 4));
+                GPIOB_AFRL |=  (AF_Number << (PinNumber * 4));
+            } else {
+                uint8 localPin = PinNumber - 8;
+                GPIOB_AFRH &= ~(0xF << (localPin * 4));
+                GPIOB_AFRH |=  (AF_Number << (localPin * 4));
+            }
+            break;
+
+        case GPIO_C:
+            if (PinNumber <= 7) {
+                GPIOC_AFRL &= ~(0xF << (PinNumber * 4));
+                GPIOC_AFRL |=  (AF_Number << (PinNumber * 4));
+            } else {
+                uint8 localPin = PinNumber - 8;
+                GPIOC_AFRH &= ~(0xF << (localPin * 4));
+                GPIOC_AFRH |=  (AF_Number << (localPin * 4));
+            }
+            break;
+
+        case GPIO_D:
+            if (PinNumber <= 7) {
+                GPIOD_AFRL &= ~(0xF << (PinNumber * 4));
+                GPIOD_AFRL |=  (AF_Number << (PinNumber * 4));
+            } else {
+                uint8 localPin = PinNumber - 8;
+                GPIOD_AFRH &= ~(0xF << (localPin * 4));
+                GPIOD_AFRH |=  (AF_Number << (localPin * 4));
+            }
+            break;
+
+        default:
+            break;
+    }
+}

@@ -5,6 +5,7 @@
 #include <Rcc.h>
 #include "pwm.h"
 #include "pwm_private.h"
+#include "GPIO.h"
 
 
 /*******************************************************************
