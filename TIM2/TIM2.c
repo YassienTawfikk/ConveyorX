@@ -22,6 +22,9 @@
 // TIM2 CCMR1 Register (Capture/Compare Mode Register 1) - Input Mode
 #define TIM2_CCMR1_CC1S_Pos             (0)
 #define TIM2_CCMR1_CC1S_Msk             (0x3 << TIM2_CCMR1_CC1S_Pos) // Bits 1:0 for CC1S
+
+
+
 #define TIM2_CCMR1_IC1PSC_Pos           (2)
 #define TIM2_CCMR1_IC1PSC_Msk           (0x3 << TIM2_CCMR1_IC1PSC_Pos) // Bits 3:2 for IC1PSC
 #define TIM2_CCMR1_IC1F_Pos             (4)
@@ -51,7 +54,19 @@ void TIM2_Capture_Init(void) {
     *GPIOA_AFRL &= ~(0xF << (0 * 4)); // Clear AF bits for PA0 (bits 3:0)
     *GPIOA_AFRL |= (0x1 << (0 * 4));  // Set to 0x1 (AF1 for TIM2)
 
+
+
+
     // 3. Configure TIM2 in Input Capture Mode
+
+    // 5. Enable the Timer Counter
+    *TIM2_CR1 |= TIM2_CR1_CEN_Msk; // Enable TIM2 counter (CEN bit)
+
+    // Counter Mode: Up-counting (default)
+    *TIM2_CR1 &= ~TIM2_CR1_DIR_Msk;      // Ensure up-counting mode (DIR bit 0)
+    *TIM2_CR1 &= ~TIM2_CR1_CMS_Msk;      // Ensure Edge-aligned mode (CMS bits 00)
+
+
     // Set Prescaler to get 1MHz timer clock (1 tick = 1us)
     // For 84MHz: (84000000 / 1000000) - 1 = 83
     *TIM2_PSC = (TIM2_CLOCK_FREQ_HZ / 1000000UL) - 1;
@@ -59,11 +74,7 @@ void TIM2_Capture_Init(void) {
     // Set Auto-Reload Register (Period)
     *TIM2_ARR = 0xFFFFFFFFUL; // Set to max for 32-bit counting
 
-    // Counter Mode: Up-counting (default)
-    *TIM2_CR1 &= ~TIM2_CR1_DIR_Msk;      // Ensure up-counting mode (DIR bit 0)
-    *TIM2_CR1 &= ~TIM2_CR1_CMS_Msk;      // Ensure Edge-aligned mode (CMS bits 00)
-
-    // 4. Configure TIM2 Input Capture Channel 1 (CH1)
+    // Configure TIM2 Input Capture Channel 1 (CH1)
     // Configure CCMR1 (Capture/Compare Mode Register 1) for Channel 1
     // Set CC1S to 01 (Input, IC1 is mapped on TI1)
     *TIM2_CCMR1 &= ~TIM2_CCMR1_CC1S_Msk;
@@ -78,13 +89,12 @@ void TIM2_Capture_Init(void) {
     // Configure CCER (Capture/Compare Enable Register)
     // Set CC1P (Capture/Compare 1 Polarity) to 0 (non-inverted/rising edge)
     // Set CC1NP (Capture/Compare 1 Complementary Polarity) to 0
-    *TIM2_CCER &= ~(TIM2_CCER_CC1P_Msk | TIM2_CCER_CC1NP_Msk); // Clear both bits for rising edge
+    // Clear both bits for rising edge
+    *TIM2_CCER &= ~(TIM2_CCER_CC1P_Msk);
+    *TIM2_CCER &= ~(TIM2_CCER_CC1NP_Msk);
 
     // Enable Capture/Compare 1 (CC1E bit 0)
     *TIM2_CCER |= TIM2_CCER_CC1E_Msk; // Set CC1E to 1
-
-    // 5. Enable the Timer Counter
-    *TIM2_CR1 |= TIM2_CR1_CEN_Msk; // Enable TIM2 counter (CEN bit)
 }
 
 uint32 TIM2_GetCaptureValue(void) {
