@@ -39,17 +39,18 @@ void LCD_DisplaySpeed(uint16_t speed_mm_s) {
 
 void LCD_DisplayCount(uint32_t count) {
     LCD_SetCursor(1, 0);
-    LCD_WriteString("Cnt:      ");
-    LCD_SetCursor(1, 5);
+    LCD_WriteString("Cnt:    ");
+    LCD_SetCursor(1, 4);
     LCD_WriteInteger(count);
 }
 
 void LCD_DisplayMotorSpeed(uint16 value) {
     uint16 duty = (uint16)(((double)value / 1023) * 100);
 
-    LCD_SetCursor(1, 10);
+    LCD_SetCursor(1, 8);
     LCD_WriteString("PWM:");
-    LCD_SetCursor(1, 14);
+    LCD_WriteString("         ");
+    LCD_SetCursor(1, 12);
     LCD_WriteInteger(duty);
     LCD_WriteString("%");
 }
