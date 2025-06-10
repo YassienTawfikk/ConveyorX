@@ -106,4 +106,4 @@ void EXTI15_10_IRQHandler(void) {
   for (uint8 i = 10; i <= 15; i++) {
     EXTI_GenericHandler(i);
   }
-};
+}

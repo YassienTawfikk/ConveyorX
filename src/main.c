@@ -11,6 +11,8 @@
 #include "ObjectDetection.h"
 #include "TIM2.h"
 #include "TIM_Delay.h"
+#include "pwm.h"
+#include "ADC.h"
 
 // ───── Pin Definitions ──────────────────────────────────
 #define IR_PIN             2   // GPIO_A
@@ -25,6 +27,7 @@ volatile uint32_t capture2        = 0;
 volatile uint8_t capture_sequence = 0;
 uint32_t objectCount              = 0;
 int lcd_emergency_displayed       = 0;
+uint16 adc_value                  = 0;
 
 // ───── LCD Display Helpers ──────────────────────────────
 void LCD_DisplaySpeed(uint16_t speed_mm_s) {
@@ -38,7 +41,7 @@ void LCD_DisplaySpeed(uint16_t speed_mm_s) {
 void LCD_DisplayCount(uint32_t count) {
     LCD_SetCursor(1, 0);
     LCD_WriteString("Count: ");
-    LCD_SetCursor(1, 7);
+    LCD_SetCursor(1, 6);
     LCD_WriteInteger(count);
 }
 
@@ -48,6 +51,14 @@ void LCD_DisplayEmergency(void) {
     LCD_WriteString("   EMERGENCY ");
     LCD_SetCursor(1, 0);
     LCD_WriteString("     STOP   ");
+}
+
+void LCD_DisplayMotorSpeed(uint16 value) {
+    LCD_SetCursor(1, 8);
+    LCD_WriteString("PWM: ");
+    LCD_SetCursor(1, 12);
+    LCD_WriteInteger((uint16)(((double)value/1023) * 100 ));
+    LCD_WriteString("%");
 }
 
 // ───── Interrupt Handlers ───────────────────────────────
@@ -103,6 +114,17 @@ void Init_SpeedMeasurement(void) {
     TIM2_Capture_Init();  // PA0 (CH1) input capture
 }
 
+void Init_ADC(void) {
+    ADC_Init();
+    adc_value = ADC_Read(1);
+}
+
+void Init_PWM(void) {
+    PWM_Init();
+    PWM_SetDutyCycle(adc_value);
+    LCD_DisplayMotorSpeed(adc_value);
+}
+
 // ───── Speed Calculation ────────────────────────────────
 void Process_SpeedMeasurement(void) {
     if ((TIM2->SR & TIM_SR_CC1IF) != 0) {
@@ -136,6 +158,8 @@ int main(void) {
     Init_ObjectDetection();
     Init_ButtonsAndInterrupts();
     Init_SpeedMeasurement();
+    Init_ADC();
+    Init_PWM();
 
     while (1) {
         __disable_irq();
@@ -156,6 +180,11 @@ int main(void) {
 
         // ─── Speed Measurement ─────────────────────
         Process_SpeedMeasurement();
+
+        // ─── Motor Measurement ─────────────────────
+        adc_value = ADC_Read(1);
+        PWM_SetDutyCycle(adc_value);
+        LCD_DisplayMotorSpeed(adc_value);
 
         delay_ms(100);
     }
