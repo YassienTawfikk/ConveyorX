@@ -13,11 +13,10 @@
  *******************************************************************/
 
 void PWM_Init(void) {
-
     GPIO_Init(GPIO_A, 8, GPIO_AF, GPIO_PUSH_PULL);
 
     /* set AF1 for PA8 (TIM1_CH1) */
-    GPIO_SetAlternateFunction(GPIO_A, 8, 1);  // TIM1_CH1 uses AF1
+    GPIO_SetAlternateFunction(GPIO_A, 8, 1); // TIM1_CH1 uses AF1
 
     /* enable clock for the PWM */
     Rcc_Enable(RCC_TIM1);
@@ -38,15 +37,15 @@ void PWM_Init(void) {
     /* clear OC1M bits */
     TIM1->TIMx_CCMR1 &= ~(0x7 << 4);
     /* set PWM mode 1 */
-    TIM1->TIMx_CCMR1 |=  (0x6 << 4);
+    TIM1->TIMx_CCMR1 |= (0x6 << 4);
     /* enable preload */
-    TIM1->TIMx_CCMR1 |=  (1 << 3);
+    TIM1->TIMx_CCMR1 |= (1 << 3);
 
 
     /* edge aligned mode */
     TIM1->TIMx_CR1 &= ~(0x3 << 5);
     /* enable auto-reload */
-    TIM1->TIMx_CR1 |=  (1 << 7);
+    TIM1->TIMx_CR1 |= (1 << 7);
 
 
     /* enable channel 1 output */

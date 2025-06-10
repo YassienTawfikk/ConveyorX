@@ -49,7 +49,7 @@ void TIM2_Capture_Init(void) {
 
     // Configure PA0 Alternate Function Register (AFRL for pins 0-7) to AF1 for TIM2_CH1
     *GPIOA_AFRL &= ~(0xF << (0 * 4)); // Clear AF bits for PA0 (bits 3:0)
-    *GPIOA_AFRL |= (0x1 << (0 * 4));  // Set to 0x1 (AF1 for TIM2)
+    *GPIOA_AFRL |= (0x1 << (0 * 4)); // Set to 0x1 (AF1 for TIM2)
 
     // 3. Configure TIM2 in Input Capture Mode
     // Set Prescaler to get 1MHz timer clock (1 tick = 1us)
@@ -60,8 +60,8 @@ void TIM2_Capture_Init(void) {
     *TIM2_ARR = 0xFFFFFFFFUL; // Set to max for 32-bit counting
 
     // Counter Mode: Up-counting (default)
-    *TIM2_CR1 &= ~TIM2_CR1_DIR_Msk;      // Ensure up-counting mode (DIR bit 0)
-    *TIM2_CR1 &= ~TIM2_CR1_CMS_Msk;      // Ensure Edge-aligned mode (CMS bits 00)
+    *TIM2_CR1 &= ~TIM2_CR1_DIR_Msk; // Ensure up-counting mode (DIR bit 0)
+    *TIM2_CR1 &= ~TIM2_CR1_CMS_Msk; // Ensure Edge-aligned mode (CMS bits 00)
 
     // 4. Configure TIM2 Input Capture Channel 1 (CH1)
     // Configure CCMR1 (Capture/Compare Mode Register 1) for Channel 1

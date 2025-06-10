@@ -14,7 +14,9 @@
  *******************************************************************/
 
 void PWM_Init(void);
+
 void PWM_SetDutyCycle(uint16 duty);
+
 void PWM_Stop(void);
 
 #endif //PWM_H

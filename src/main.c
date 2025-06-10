@@ -19,14 +19,14 @@
 #define DISTANCE_MM     50.0f  // mm per rising edge
 
 // ───── Global Variables ─────────────────────────────────
-volatile uint8 Emergency_Flag     = 0;
-volatile uint32_t capture1        = 0;
-volatile uint32_t capture2        = 0;
+volatile uint8 Emergency_Flag = 0;
+volatile uint32_t capture1 = 0;
+volatile uint32_t capture2 = 0;
 volatile uint8_t capture_sequence = 0;
-uint32_t objectCount              = 0;
-int lcd_emergency_displayed       = 0;
-uint16 adc_value                  = 0;
-uint16 last_speed                 = 0;
+uint32_t objectCount = 0;
+int lcd_emergency_displayed = 0;
+uint16 adc_value = 0;
+uint16 last_speed = 0;
 
 // ───── LCD Display Helpers ──────────────────────────────
 void LCD_DisplaySpeed(uint16_t speed_mm_s) {
@@ -45,7 +45,7 @@ void LCD_DisplayCount(uint32_t count) {
 }
 
 void LCD_DisplayMotorSpeed(uint16 value) {
-    uint16 duty = (uint16)(((double)value / 1023) * 100);
+    uint16 duty = (uint16) (((double) value / 1023) * 100);
 
     LCD_SetCursor(1, 8);
     LCD_WriteString("PWM:");
@@ -117,7 +117,7 @@ void Init_ButtonsAndInterrupts(void) {
 }
 
 void Init_SpeedMeasurement(void) {
-    TIM2_Capture_Init();  // PA0 (CH1) input capture
+    TIM2_Capture_Init(); // PA0 (CH1) input capture
 }
 
 void Init_ADC(void) {
@@ -144,21 +144,21 @@ uint16_t Process_SpeedMeasurement(void) {
             capture_sequence = 0;
 
             uint32_t period_us = (capture2 >= capture1)
-                ? (capture2 - capture1)
-                : ((0xFFFFFFFFUL - capture1) + capture2 + 1);
+                                     ? (capture2 - capture1)
+                                     : ((0xFFFFFFFFUL - capture1) + capture2 + 1);
 
             TIM2_ClearCaptureFlag();
 
             if (period_us > 0 && period_us < 1000000) {
                 float speed = DISTANCE_MM * (1000000.0f / period_us);
-                return (uint16_t)speed;
+                return (uint16_t) speed;
             }
         }
 
         TIM2_ClearCaptureFlag();
     }
 
-    return last_speed;  // return last value if not updated
+    return last_speed; // return last value if not updated
 }
 
 // ───── Main Program ─────────────────────────────────────
@@ -203,14 +203,14 @@ int main(void) {
 
         // ─── ADC + PWM Update ──────────────────────
         adc_value = ADC_Read(1);
-        uint16_t current_pwm = (uint16_t)(((double)adc_value / 1023) * 100);
+        uint16_t current_pwm = (uint16_t)(((double) adc_value / 1023) * 100);
         if (current_pwm != last_pwm) {
             LCD_DisplayMotorSpeed(adc_value);
             PWM_SetDutyCycle(adc_value);
             last_pwm = current_pwm;
         }
 
-        delay_ms(20);  // short, smooth refresh
+        delay_ms(20); // short, smooth refresh
     }
 
     return 0;
