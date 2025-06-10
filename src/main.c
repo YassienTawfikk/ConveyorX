@@ -206,6 +206,7 @@ int main(void) {
         uint16_t current_pwm = (uint16_t)(((double)adc_value / 1023) * 100);
         if (current_pwm != last_pwm) {
             LCD_DisplayMotorSpeed(adc_value);
+            PWM_SetDutyCycle(adc_value);
             last_pwm = current_pwm;
         }
 
