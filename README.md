@@ -1,5 +1,7 @@
 ## ConveyorX
 
+![ConveyorX System Overview](https://github.com/user-attachments/assets/984412f8-db41-4e62-95c0-4b706ce76adc)
+
 ### Overview
 
 **ConveyorX** is a real-time embedded system developed on the **STM32F401VE** microcontroller. It monitors and measures the **speed** and **count** of objects on a conveyor belt using **Timer Input Capture**, **GPIO polling**, and **LCD display**. This system is built with a clear focus on real-time responsiveness and low-level embedded logic, and is fully compatible with both **Proteus simulation** and STM32 hardware boards.
@@ -13,7 +15,7 @@ It demonstrates critical embedded engineering concepts including:
 - Interrupt handling for system safety
 - Structured modular C programming and custom driver layering
 
-![ConveyorX System Overview](https://github.com/user-attachments/assets/984412f8-db41-4e62-95c0-4b706ce76adc)
+<https://github.com/user-attachments/assets/6a6e361f-a388-491d-9a0c-7f26c36ff87f>
 
 ---
 
